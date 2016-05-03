@@ -1,0 +1,41 @@
+version: '2'
+services:
+  nginx:
+    build: "./nginx"
+    ports:
+      - "80:80"
+    depends_on:
+      - web
+    environment:
+      NGINX_PORT: 80
+  web:
+    image: "redmine:3.2.1"
+    expose:
+      - "3000"
+    #ports:
+    #  - "443:443"
+    #  - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      MYSQL_PORT_3306_TCP: 3306
+      MYSQL_ENV_MYSQL_USER: root
+      MYSQL_ENV_MYSQL_PASSWORD: my-redmine
+      MYSQL_ENV_MYSQL_DATABASE: redmine
+#      REDMINE_NO_DB_MIGRATE: 1
+    restart: unless-stopped
+  mysql:
+    image: "mysql"
+    volumes_from:
+      - container:store
+    expose:
+      - "3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: my-redmine
+      MYSQL_PASSWORD: my-redmine
+      MYSQL_USER: redmine
+      MYSQL_DATABASE: redmine
+#volumes:
+#  store:
+#    external:
+#      name: store 
